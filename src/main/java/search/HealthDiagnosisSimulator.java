@@ -50,7 +50,7 @@ public class HealthDiagnosisSimulator {
       * @return ArrayList<Disease> : All diseases with the matching severity.
       * */
      static ArrayList<Disease> findDiseaseBySeverity(Disease[] diseases, int patientSeverity) {
-         ArrayList<Disease> result = new ArrayList<>();
+         ArrayList<Disease> result = new ArrayList<>(); // Empty
 
          int low = 0;
          int high = diseases.length - 1;
@@ -77,23 +77,27 @@ public class HealthDiagnosisSimulator {
 
          // Explore left and right from the found index
          int left = foundIndex;
-         int right = foundIndex;
+         int right = foundIndex+1; // excluding redundant element
+
+
 
          // Move left to find other matches
          while(left >=0 && diseases[left].severity == patientSeverity) {
+             result.add(diseases[left]); // reducing use of extra loop
              left--;
          }
 
 
          //  Move right to find other matches
          while (right < diseases.length && diseases[right].severity == patientSeverity){
+             result.add(diseases[right]); // reducing use of extra loop
              right++;
          }
 
          // Add all matches to result (from left+1 to right-1)
-         for (int i = left + 1; i < right; i++) {
-             result.add(diseases[i]);
-         }
+        //         for (int i = left + 1; i < right; i++) {
+        //             result.add(diseases[i]);
+        //         }
 
         return result;
     }
