@@ -1,5 +1,6 @@
 package search;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class HealthDiagnosisSimulator {
@@ -24,39 +25,77 @@ public class HealthDiagnosisSimulator {
         int patientSeverity = scanner.nextInt();
 
         // Use the binary search method to find a matching disease
-        Disease diagnosis = findDiseaseBySeverity(diseases, patientSeverity);
+        // Get all matching diseases with that severity
+        ArrayList<Disease> diagnosises = findDiseaseBySeverity(diseases, patientSeverity);
 
-
-        if (diagnosis != null) {
-            System.out.println("🩺 Possible diagnosis: " + diagnosis.name);
-        } else {
+        // Show results
+        if (diagnosises.isEmpty()) {
             System.out.println("❌ No matching diagnosis found for that severity.");
+        } else {
+            System.out.println("🩺 Possible diagnoses:");
+            for (Disease d : diagnosises) {
+                System.out.println(" - " + d.name);
+            }
         }
 
         scanner.close();
 
     }
 
-    // method that performs Binary Search on disease array
-     static Disease findDiseaseBySeverity(Disease[] diseases, int patientSeverity) {
+     /**
+      * @description Binary search to find *one* match, then expand left and right
+      * to find *all* diseases with the same severity.
+      * @param diseases : ascending sorted array by severity
+      * @param patientSeverity : the symptoms severity level
+      * @return ArrayList<Disease> : All diseases with the matching severity.
+      * */
+     static ArrayList<Disease> findDiseaseBySeverity(Disease[] diseases, int patientSeverity) {
+         ArrayList<Disease> result = new ArrayList<>();
+
          int low = 0;
          int high = diseases.length - 1;
+         int foundIndex = -1; // -1: means no match
 
+         // Standard binary search to find one match
          while (low <= high) {
              int mid = (low + high) / 2;
              System.out.println("Checking for: " + diseases[mid].name + " (Severity: " + diseases[mid].severity + ")");
 
              if (diseases[mid].severity == patientSeverity) {
-                 return diseases[mid]; // Match found
+                 foundIndex = mid;
+                 break; // one match found
              } else if (diseases[mid].severity < patientSeverity) {
                  low = mid + 1; // Go right
              } else {
                  high = mid - 1; // Go left
              }
          }
+         // If no match found, return empty list
+         if (foundIndex == -1) {
+             return result;
+         }
+
+         // Explore left and right from the found index
+         int left = foundIndex;
+         int right = foundIndex;
+
+         // Move left to find other matches
+         while(left >=0 && diseases[left].severity == patientSeverity) {
+             left--;
+         }
 
 
-        return null; // No match
+         //  Move right to find other matches
+         while (right < diseases.length && diseases[right].severity == patientSeverity){
+             right++;
+         }
+
+         // Add all matches to result (from left+1 to right-1)
+         for (int i = left + 1; i < right; i++) {
+             result.add(diseases[i]);
+         }
+
+        return result;
     }
 
 
